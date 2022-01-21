@@ -154,19 +154,31 @@ class _LoginState extends State<Login> {
           isloading = true;
         });
 
-           Provider.of<Global>(context, listen: false)
-            .setuser(true);
+        Provider.of<Global>(context, listen: false).setuser(true);
 
         final usercredential = await fireauth.createUserWithEmailAndPassword(
             email: email, password: password);
 
-     
-
         // Provider.of<Global>(context).setuser(credential.additionalUserInfo.isNewUser);
       } catch (error) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('An error occured')));
-        print('error');
+        //print(error.runtimeType);
+        final e = error.toString();
+        //print(e.runtimeType);
+        if (e.contains('formatted')) {
+          ScaffoldMessenger.of(context)
+              .showSnackBar(SnackBar(content: Text('Invalid Email Address')));
+        } else if (e.contains('empty')) {
+          ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Email or pasword can\'t be empty')));
+        } else if (e.contains('network')) {
+          ScaffoldMessenger.of(context)
+              .showSnackBar(SnackBar(content: Text('No Internet Connection')));
+        } else {
+          ScaffoldMessenger.of(context)
+              .showSnackBar(SnackBar(content: Text(e)));
+        }
+        //else if(e.contains('other'))
+        //print(e);
         setState(() {
           isloading = false;
         });
@@ -182,9 +194,22 @@ class _LoginState extends State<Login> {
 
         //Provider.of<Global>(context).setuser(credential.additionalUserInfo.isNewUser);
       } catch (error) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('An error occured')));
-        print(error);
+        final e = error.toString();
+        if (e.contains('formatted')) {
+          ScaffoldMessenger.of(context)
+              .showSnackBar(SnackBar(content: Text('Invalid Email Address')));
+        } else if (e.contains('empty')) {
+          ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Email or pasword can\'t be empty')));
+        } else if (e.contains('network')) {
+          ScaffoldMessenger.of(context)
+              .showSnackBar(SnackBar(content: Text('No Internet Connection')));
+        } else {
+          ScaffoldMessenger.of(context)
+              .showSnackBar(SnackBar(content: Text(e)));
+        }
+
+       // print(error);
         setState(() {
           isloading = false;
         });
@@ -252,7 +277,7 @@ class _LoginState extends State<Login> {
                           height: mediaquery.size.height * 0.55,
                           width: mediaquery.size.width * 0.76,
                           decoration: BoxDecoration(
-                            color: Color.fromRGBO(150, 170, 100, 0.8),
+                            color: Color.fromRGBO(150, 170, 100, 0.87),
                             border: Border.all(
                               color: Colors.deepPurple,
                               width: 2,
@@ -336,33 +361,60 @@ class _LoginState extends State<Login> {
                                       isloading = true;
                                     });
 
-                                    final user = await GoogleSignIn().signIn();
-                                    print(user.displayName);
-                                    print(user.email);
-                                    print(user.id);
+                                    try {
+                                      final user =
+                                          await GoogleSignIn().signIn();
+                                      //print(user.displayName);
+                                      //print(user.email);
+                                      //print(user.id);
 
-                                    if (user == null) {
+                                      if (user == null) {
+                                        setState(() {
+                                          isloading = false;
+                                        });
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(SnackBar(
+                                                content:
+                                                    Text('An error occured')));
+                                        return;
+                                      }
+
+                                      final authdata =
+                                          await user.authentication;
+
+                                      final credentials =
+                                          GoogleAuthProvider.credential(
+                                              accessToken: authdata.accessToken,
+                                              idToken: authdata.idToken);
+
+                                      final usercredential = await FirebaseAuth
+                                          .instance
+                                          .signInWithCredential(credentials);
+                                      print(usercredential.toString());
+
+                                      Provider.of<Global>(context,
+                                              listen: false)
+                                          .setuser(usercredential
+                                              .additionalUserInfo.isNewUser);
+                                    } catch (error) {
+                                      final e = error.toString();
                                       setState(() {
                                         isloading = false;
                                       });
-                                      return;
+                                      if (error
+                                          .toString()
+                                          .contains('network_error')) {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(SnackBar(
+                                                content:
+                                                    Text('No Internet Connection')));
+                                      } else {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(SnackBar(
+                                                content:
+                                                    Text(e)));
+                                      }
                                     }
-
-                                    final authdata = await user.authentication;
-
-                                    final credentials =
-                                        GoogleAuthProvider.credential(
-                                            accessToken: authdata.accessToken,
-                                            idToken: authdata.idToken);
-
-                                    final usercredential = await FirebaseAuth
-                                        .instance
-                                        .signInWithCredential(credentials);
-                                    print(usercredential.toString());
-
-                                    Provider.of<Global>(context, listen: false)
-                                        .setuser(usercredential
-                                            .additionalUserInfo.isNewUser);
                                   },
                                   icon: FaIcon(FontAwesomeIcons.google),
                                   label: Text('Sign in with google account'),

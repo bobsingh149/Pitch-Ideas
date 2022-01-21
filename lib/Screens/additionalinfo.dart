@@ -6,10 +6,12 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:country_picker/country_picker.dart';
 import 'package:flutter/widgets.dart';
+import 'package:pitch/Providers/globalData.dart';
 import 'package:pitch/Screens/TabScreen.dart';
 import 'package:pitch/Widgets/drawer.dart';
 import 'package:pitch/Widgets/imageinput.dart';
 import 'package:pitch/helper/firebasequeries.dart';
+import 'package:provider/provider.dart';
 
 class Additional extends StatefulWidget {
   static const routename = '/additonal';
@@ -49,11 +51,11 @@ class _AdditionalState extends State<Additional> {
     formkey.currentState.save();
 
     // FocusScope.of(context).unfocus();
-    print('user additional info');
-    print(gender);
-    print(countryname);
-    print(name);
-    print(age);
+   // print('user additional info');
+    //print(gender);
+    //print(countryname);
+    //print(name);
+    //print(age);
 
     setState(() {
       isloading = true;
@@ -100,12 +102,13 @@ class _AdditionalState extends State<Additional> {
               '6': false,
               '7': false,
             });
-
       } catch (error) {
         print('error');
         print(error);
       }
     }
+
+    Provider.of<Global>(context,listen: false).additonaldone=true;
     Navigator.of(context).pushReplacementNamed(Tabs.routename);
   }
 
@@ -254,7 +257,13 @@ class _AdditionalState extends State<Additional> {
                           width: 170,
                           // color: Colors.black38,
                           padding: EdgeInsets.symmetric(horizontal: 15),
-                          child: Text('Gender')),
+                          child:Card
+                          (
+
+                            color: Colors.pink[300],
+                            child: Container(
+                              padding: EdgeInsets.all(5),
+                              child: Text('Gender',style: TextStyle(color: Colors.white),)))),
                       Container(
                         //alignment: Alignment.center,
                         child: DropdownButton<String>(
@@ -349,7 +358,7 @@ class _AdditionalState extends State<Additional> {
                                     setState(() {
                                       countryname = country.name;
                                     });
-                                    print(country.displayName);
+                                    //print(country.displayName);
                                   });
                             },
                             child: Text('Pick my country')),

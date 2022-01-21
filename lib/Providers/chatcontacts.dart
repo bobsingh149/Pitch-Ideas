@@ -27,28 +27,55 @@ class Contact {
 
 class Contactsdata with ChangeNotifier {
   List<Contact> _mycontacts = [];
-  List<Contact> _invcontacts = [];
+  Map<String, List<Contact>> invcontacts = {};
   List<Contact> _myinvestment = [];
   Map<String, bool> teamuptrack = {};
   Map<String, bool> investtrack = {};
-
+  String myid = FirebaseHelper.getid();
+  String myname;
+  bool namefetched = false;
   List<Contact> get contacts {
     return [..._mycontacts];
-  }
-
-  List<Contact> get invcontacts {
-    return [..._invcontacts];
   }
 
   List<Contact> get myinvestment {
     return [..._myinvestment];
   }
 
+  Future<void> inboxteam({@required Contact c}) async {
+    if (!namefetched) {
+ 
+      this.myname = await FirebaseHelper.getitemfield(
+          collectionpath: 'users', itemid: this.myid, field: 'name');
+     print(myname);
+      namefetched = true;
+    }
+    FirebaseFirestore.instance.collection('users/${c.userid}/inbox').add({
+      'm':
+          '${this.myname} has requested a team up with you, find him/her in your team contacts'
+    });
+  }
+
+  Future<void> inboxinvest(
+      {@required Contact c, @required String ideatitle}) async {
+    if (!namefetched) {
+      this.myname = await FirebaseHelper.getitemfield(
+          collectionpath: 'users', itemid: this.myid, field: 'name');
+      namefetched = true;
+
+           print(myname);
+    }
+    FirebaseFirestore.instance.collection('users/${c.userid}/inbox').add({
+      'm':
+          '${this.myname} will like to invest in your $ideatitle idea, to connect with him/her go to your idea in \"MyIdeas\" tab and tap on \"see investors\"'
+    });
+  }
+
   Future<void> teamup({String ideaid, String otherpersonid}) async {
     //if(_mycontacts.contains(element))
     if (teamuptrack.containsKey(otherpersonid)) return;
 
-   await incscore(ideaid);
+    await incscore(ideaid);
 
     print('working');
     await FirebaseHelper.add(
@@ -68,7 +95,7 @@ class Contactsdata with ChangeNotifier {
         .doc(otherpersonid)
         .get();
 
-    print('usermap :${userinfo.data()}');
+    //print('usermap :${userinfo.data()}');
 
     if (userinfo.data() == null) return;
 
@@ -83,28 +110,33 @@ class Contactsdata with ChangeNotifier {
     );
     teamuptrack[otherpersonid] = true;
     _mycontacts.add(contact);
+    await this.inboxteam(c: contact);
     notifyListeners();
   }
 
   Future<void> getinvcontacts(String ideaid) async {
-    if (_invcontacts.isNotEmpty) return;
+    if (invcontacts.containsKey(ideaid)) return;
 
-    _invcontacts.clear();
+    Map<String, bool> invmap = {};
     try {
       final snapshots = await FirebaseFirestore.instance
           .collection('ideas/$ideaid/investor')
           //.where('blocked', isEqualTo: false)
           .get();
 
+      invcontacts[ideaid] = [];
+
       final contactlist = snapshots.docs;
 
-      print('contactlist ${contactlist.length}');
+      //  print('contactlist ${contactlist.length}');
 
       for (int i = 0; i < contactlist.length; i++) {
         //  if (i == 1||i==3) continue;
+
         String userid = contactlist[i]['uid'];
+        if (invmap.containsKey(userid)) continue;
         userid = userid.trim();
-        print('userid$userid');
+        // print('userid$userid');
         /* userinfo = await FirebaseHelper.getitem(
             collectionpath: 'users', itemid: userid);*/
 
@@ -113,7 +145,7 @@ class Contactsdata with ChangeNotifier {
             .doc(userid)
             .get();
 
-        print('usermap :${userinfo.data()}');
+        // print('usermap :${userinfo.data()}');
 
         if (userinfo.data() == null) continue;
 
@@ -133,21 +165,23 @@ class Contactsdata with ChangeNotifier {
         print(contact.profession);
          print(contact.userid);*/
 
-        _invcontacts.add(contact);
+        invcontacts[ideaid].add(contact);
+        invmap[userid] = true;
       }
 
       //notifyListeners();
-      print('completed');
+      //print('completed');
     } catch (error) {
       throw error;
     }
   }
 
-  Future<void> getMyInvestment({bool refresh = false}) async {
-    if (!refresh) {
-      if (_mycontacts.isNotEmpty) return;
-    }
+  Future<void> getMyInvestment() async {
+    if (_myinvestment.isNotEmpty) return;
+
     _myinvestment.clear();
+
+    Map<String, bool> myinvmap = {};
     try {
       final snapshots = await FirebaseFirestore.instance
           .collection('users/${FirebaseHelper.getid()}/myinvestments')
@@ -156,12 +190,14 @@ class Contactsdata with ChangeNotifier {
 
       final contactlist = snapshots.docs;
 
-      print('contactlist ${contactlist.length}');
+      //print('contactlist ${contactlist.length}');
 
       for (int i = 0; i < contactlist.length; i++) {
-        String userid = contactlist[i]['uid'];
+        String userid = contactlist[i]['owner'];
+        //print('reached $userid');
+        if (myinvmap.containsKey(userid)) continue;
         // userid = userid.trim();
-        print('userid$userid');
+        //print('userid$userid');
         /* userinfo = await FirebaseHelper.getitem(
             collectionpath: 'users', itemid: userid);*/
 
@@ -169,8 +205,8 @@ class Contactsdata with ChangeNotifier {
             .collection('users')
             .doc(userid)
             .get();
-        print(userinfo);
-        print('usermap :${userinfo.data()}');
+        // print(userinfo);
+        //print('usermap :${userinfo.data()}');
 
         if (userinfo.data() == null) continue;
 
@@ -178,25 +214,26 @@ class Contactsdata with ChangeNotifier {
           age: userinfo['age'],
           country: userinfo['country'],
           gender: userinfo['gender'],
-          userid: contactlist[i]['uid'],
+          userid: userid,
           name: userinfo['name'],
           profession: userinfo['profession'],
           url: userinfo['url'],
         );
-        print(contact.age);
-        print(contact.country);
-        print(contact.gender);
-        print(contact.name);
-        print(contact.profession);
+        // print(contact.age);
+        //print(contact.country);
+        //print(contact.gender);
+        // print(contact.name);
+        // print(contact.profession);
         // print(contact.userid);
         investtrack[userid] = true;
         _myinvestment.add(contact);
+        myinvmap[userid] = true;
       }
-
+      // print('done');
       // notifyListeners();
-      print('completed');
+      //print('completed');
     } catch (error) {
-      print('error');
+      //print('error');
       throw error;
     }
   }
@@ -213,8 +250,9 @@ class Contactsdata with ChangeNotifier {
     });
   }
 
-  Future<void> invest(String ideaid, String ideaowner) async {
-    if (investtrack.containsKey(ideaid)) return;
+  Future<void> invest(
+      {String ideaid, String ideaowner, String ideatitle}) async {
+    if (investtrack.containsKey(ideaowner)) return;
 
     await incscore(ideaid);
 
@@ -225,14 +263,37 @@ class Contactsdata with ChangeNotifier {
         .collection('users/${FirebaseHelper.getid()}/myinvestments')
         .add({'ideaid': ideaid, 'owner': ideaowner});
 
-    investtrack[ideaid] = true;
+    final userinfo = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(ideaowner)
+        .get();
+
+    //print('usermap :${userinfo.data()}');
+
+    if (userinfo.data() == null) return;
+
+    Contact contact = new Contact(
+      age: userinfo['age'],
+      country: userinfo['country'],
+      gender: userinfo['gender'],
+      userid: ideaowner,
+      name: userinfo['name'],
+      profession: userinfo['profession'],
+      url: userinfo['url'],
+    );
+    investtrack[ideaowner] = true;
+    _myinvestment.add(contact);
+    await this.inboxinvest(c: contact, ideatitle: ideatitle);
+    notifyListeners();
+
+    // notifyListeners();
   }
 
-  Future<void> getcontacts(bool refresh) async {
-    if (!refresh) {
-      if (_mycontacts.isNotEmpty) return;
-    }
+  Future<void> getcontacts() async {
+    if (_mycontacts.isNotEmpty) return;
+
     _mycontacts.clear();
+    Map<String, bool> mycontactsmap = {};
     try {
       final snapshots = await FirebaseFirestore.instance
           .collection('users/${FirebaseHelper.getid()}/contacts')
@@ -241,12 +302,14 @@ class Contactsdata with ChangeNotifier {
 
       final contactlist = snapshots.docs;
 
-      print('contactlist ${contactlist.length}');
+      //  print('contactlist ${contactlist.length}');
 
       for (int i = 0; i < contactlist.length; i++) {
         String userid = contactlist[i]['uid'];
+
+        if (mycontactsmap.containsKey(userid)) continue;
         // userid = userid.trim();
-        print('userid$userid');
+        //print('userid$userid');
         /* userinfo = await FirebaseHelper.getitem(
             collectionpath: 'users', itemid: userid);*/
 
@@ -254,8 +317,8 @@ class Contactsdata with ChangeNotifier {
             .collection('users')
             .doc(userid)
             .get();
-        print(userinfo);
-        print('usermap :${userinfo.data()}');
+        //print(userinfo);
+        //print('usermap :${userinfo.data()}');
 
         if (userinfo.data() == null) continue;
 
@@ -268,20 +331,21 @@ class Contactsdata with ChangeNotifier {
           profession: userinfo['profession'],
           url: userinfo['url'],
         );
-        print(contact.age);
-        print(contact.country);
-        print(contact.gender);
-        print(contact.name);
-        print(contact.profession);
+        //print(contact.age);
+        //print(contact.country);
+        // print(contact.gender);
+        //print(contact.name);
+        //print(contact.profession);
         // print(contact.userid);
         teamuptrack[userid] = true;
         _mycontacts.add(contact);
+        mycontactsmap[userid] = true;
       }
 
       // notifyListeners();
-      print('completed');
+      //print('completed');
     } catch (error) {
-      print('error');
+      //print('error');
       throw error;
     }
   }
@@ -306,6 +370,9 @@ class Contactsdata with ChangeNotifier {
 
   void clear() {
     _mycontacts.clear();
-    _invcontacts.clear();
+    invcontacts.clear();
+    _myinvestment.clear();
+    teamuptrack.clear();
+    investtrack.clear();
   }
 }

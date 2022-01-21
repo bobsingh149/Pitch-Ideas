@@ -52,6 +52,8 @@ class UserIdeas with ChangeNotifier {
 
   Map<String, TargetData> ideastarget = {};
 
+  bool isinit = false;
+
   Map<String, bool> likestrack = {};
 
   List<String> _feedbacks = [];
@@ -72,6 +74,9 @@ class UserIdeas with ChangeNotifier {
     _myideas.clear();
 
     QuerySnapshot snapshot;
+
+    Map<String, bool> invmap = {};
+    Map<String, bool> likesmap = {};
 
     snapshot = await FirebaseFirestore.instance
         .collection('ideas')
@@ -100,27 +105,34 @@ class UserIdeas with ChangeNotifier {
       idea.investorids = [];
       idea.likesids = [];
 
-      final invlist = await FirebaseHelper.getlist(
-          collectionpath: 'ideas/${idea.id}/investor');
+     /* final invlist = await FirebaseHelper.getlist(
+          collectionpath: 'ideas/${idea.id}/investor');*/
 
       final likeslist = await FirebaseHelper.getlist(
           collectionpath: 'ideas/${idea.id}/likes');
 
-      if (invlist == null) continue;
+     // if (invlist == null) continue;
 
-      for (int idx = 0; idx < invlist.length; idx++) {
+     /* for (int idx = 0; idx < invlist.length; idx++) {
+        if (invmap.containsKey(invlist[idx]['uid'])) continue;
+
         idea.investorids.add(invlist[idx]['uid']);
-      }
+        invmap[invlist[idx]['uid']] = true;
+      }*/
 
       if (likeslist == null) continue;
 
       for (int idx = 0; idx < likeslist.length; idx++) {
+        if (likesmap.containsKey(likeslist[idx]['uid'])) continue;
         idea.likesids.add(likeslist[idx]['uid']);
+        likesmap[likeslist[idx]['uid']] = true;
       }
 
       _myideas.add(idea);
+
+      isinit = true;
     }
-    print('executed');
+   // print('executed');
     notifyListeners();
   }
 
@@ -146,8 +158,8 @@ class UserIdeas with ChangeNotifier {
   }
 
   void agegrp(datamap, agecount) {
-    print('data map $datamap');
-    print('age grp $agecount');
+    //print('data map $datamap');
+    //print('age grp $agecount');
 
     if (datamap['age'] >= 0 && datamap['age'] <= 12) {
       agecount['1'] = agecount['1'] == null ? 1 : agecount['1'] + 1;
@@ -174,10 +186,14 @@ class UserIdeas with ChangeNotifier {
         new TargetData(agegrp: {}, country: {}, gender: {}, profession: {});
     Idea idea = _myideas.firstWhere((element) => element.id == ideaid);
     final innovativeids = idea.likesids;
-    print('liked ids ${idea.likesids}');
-
-    if (innovativeids.isEmpty) return targetdata;
-    print(innovativeids.length);
+  //  print('liked ids ${idea.likesids}');
+   // print('retuning');
+    if (innovativeids.isEmpty) {
+      ideastarget[ideaid] = targetdata;
+      return ideastarget[ideaid];
+    }
+    //print('reaching');
+    //print(innovativeids.length);
     Map<String, int> countrycount = {};
     Map<String, int> gendercount = {};
 
@@ -189,9 +205,9 @@ class UserIdeas with ChangeNotifier {
       final datamap = await FirebaseHelper.getitem(
           collectionpath: 'users', itemid: '${innovativeids[idx]}');
       if (datamap == null) continue;
-      print(datamap);
+      //print(datamap);
       var str = 'country';
-      print('county ${datamap[str]}');
+      //print('county ${datamap[str]}');
       countrycount[datamap['country']] =
           countrycount[datamap['country']] == null
               ? 1
@@ -260,19 +276,22 @@ class UserIdeas with ChangeNotifier {
       print(value);
     });*/
 
-    print('done');
+   // print('done');
     ideastarget[ideaid] = targetdata;
+    //print('reached');
     return ideastarget[ideaid];
   }
 
   Future<void> add(
       {String collectionpath, Map<String, Object> data, Idea idea}) async {
+    if (!isinit) await initilize();
+
     final ref =
         await FirebaseFirestore.instance.collection(collectionpath).add(data);
     idea.id = ref.id;
     // idea.investorids = [];
     //idea.likesids = [];
-    print('adding');
+    /*print('adding');
     print(idea.title);
     print(idea.id);
     print(idea.about);
@@ -282,7 +301,7 @@ class UserIdeas with ChangeNotifier {
     print(idea.investorids);
     print(idea.likesids);
     print(idea.catid);
-    print(idea.cattitle);
+    print(idea.cattitle);*/
 
     _myideas.add(idea);
     notifyListeners();
@@ -294,6 +313,18 @@ class UserIdeas with ChangeNotifier {
         .collection('ideas')
         .doc(ideaid)
         .update(data);
+
+    /*print('editing');
+    print(idea.title);
+    print(idea.id);
+    print(idea.about);
+    print(idea.description);
+    print(idea.private);
+    print(idea.investor);
+    print(idea.investorids);
+    print(idea.likesids);
+    print(idea.catid);
+    print(idea.cattitle);*/
 
     int idx = _myideas.indexWhere((element) => element.id == ideaid);
 
@@ -346,6 +377,8 @@ class UserIdeas with ChangeNotifier {
     _myideas.clear();
     ideastarget.clear();
     _feedbacks.clear();
+    likestrack.clear();
+    isinit = false;
   }
 }
 

@@ -1,3 +1,4 @@
+//@copyright 2022 Dushyant Singh
 import 'dart:convert';
 import 'dart:io';
 import 'dart:ui';
@@ -25,6 +26,8 @@ import 'package:pitch/Screens/additionalinfo.dart';
 import 'package:pitch/Screens/allIdeas.dart';
 import 'package:pitch/Screens/firebase.dart';
 import 'package:pitch/Screens/homeScreen.dart';
+import 'package:pitch/Screens/inbox.dart';
+import 'package:pitch/Screens/info.dart';
 import 'package:pitch/Screens/login.dart';
 import 'package:pitch/Screens/pitch.dart';
 import 'package:pitch/Screens/settings.dart';
@@ -54,6 +57,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 //use limit to get some of the data
 //use where and get for query
 
+//use box constraint in container
 //Use gridtile
 //Use linear gradient
 //Add dismissile widget
@@ -61,6 +65,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 //download the fonts
 //store categoty images on storage
 //initstate and change dependices very important
+//stream and future builder to return widgets
 void main() {
   /*SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
@@ -146,7 +151,7 @@ class _MyAppState extends State<MyApp> {
         builder: (ctx, app) {
           return MultiProvider(
             providers: [
-              ChangeNotifierProvider(create: (_) => Auth()),
+              // ChangeNotifierProvider(create: (_) => Auth()),
               ChangeNotifierProvider(
                 create: (_) => LoginData(), //creates a object
               ),
@@ -154,7 +159,7 @@ class _MyAppState extends State<MyApp> {
                 return CategoryData();
               }),
               ChangeNotifierProvider(create: (_) => Global()),
-              ChangeNotifierProvider(create: (_) => ImageData()),
+              //ChangeNotifierProvider(create: (_) => ImageData()),
               ChangeNotifierProvider(create: (_) => UserIdeas()),
               ChangeNotifierProvider(create: (_) => Contactsdata()),
             ],
@@ -164,7 +169,7 @@ class _MyAppState extends State<MyApp> {
 
                 theme: ThemeData(
                   primarySwatch: Colors.deepPurple,
-                  accentColor:Colors.amber,
+                  accentColor: Colors.amber,
                   //Color.fromRGBO(255, 215, 0, 1),
                   //scaffoldBackgroundColor:Colors.amberAccent,
 
@@ -173,8 +178,8 @@ class _MyAppState extends State<MyApp> {
                         fontSize: 15,
                         fontFamily: 'Roboto',
                         color: Colors.black),
-                         subtitle2: TextStyle(
-                        fontSize: 15,
+                    subtitle2: TextStyle(
+                        fontSize: 13,
                         fontFamily: 'Roboto',
                         color: Colors.white),
                     bodyText1: TextStyle(
@@ -186,11 +191,10 @@ class _MyAppState extends State<MyApp> {
                       //unmaamed objects can call methods using .()
                       color:
                           //Colors.deepPurple,
-                          Color.fromRGBO(255, 215, 0, 1),
+                          Colors.amber,
 
                       fontSize: 37,
-                      fontWeight: FontWeight.w700,
-                      fontFamily: 'alt',
+                      fontWeight: FontWeight.w900,
                       //height: 1.5,
                     ),
                     headline2: TextStyle(
@@ -203,12 +207,15 @@ class _MyAppState extends State<MyApp> {
                       // fontFamily: 'Roboto',
                       //height: 1.5,
                     ),
-                    headline3: TextStyle(color: Colors.black,fontWeight: FontWeight.w800, fontSize: 26),
+                    headline3: TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.w800,
+                        fontSize: 26),
                     bodyText2: TextStyle(
                       color:
                           //Colors.black,
                           //Color.fromRGBO(170, 90, 160, 0.9),
-                          Colors.pink[300],
+                          Colors.pink,
                       fontSize: 20,
                       fontWeight: FontWeight.w700,
 
@@ -223,15 +230,12 @@ class _MyAppState extends State<MyApp> {
                     ? Waiting()
                     : First(),
                 routes: {
-
-                  
-                  
                   HomeScreen.routename: (ctx) => HomeScreen(),
                   Pitch.routename: (ctx) => Pitch(),
-                  Setting.routename: (ctx) => Setting(),
+
                   UserInput.routename: (ctx) => UserInput(),
                   // MyIdeas.routename: (ctx) => MyIdeas(),
-                  MyImages.routename: (ctx) => MyImages(),
+                  // MyImages.routename: (ctx) => MyImages(),
                   //ImageInput.routename: (ctx) => ImageInput(),
                   // AllIdeas.routename: (ctx) => AllIdeas(),
                   Target.routename: (ctx) => Target(),
@@ -243,7 +247,9 @@ class _MyAppState extends State<MyApp> {
                   Login.routename: (ctx) => Login(),
                   Additional.routename: (ctx) => Additional(),
                   AllIdeasScreen.routename: (ctx) => AllIdeasScreen(),
-                  First.routename:(ctx)=>First(),
+                  First.routename: (ctx) => First(),
+                  Info.routename: (ctx) => Info(),
+                  Inbox.routenamme: (ctx) => Inbox(),
                 },
               ),
             ),

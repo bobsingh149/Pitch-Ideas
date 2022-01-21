@@ -1,4 +1,4 @@
-import 'dart:async';
+/*import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -153,4 +153,4 @@ class Auth with ChangeNotifier {
     authtimer = Timer(Duration(seconds: expin), logout);
     //after some time t executes this function
   }
-}
+}*/

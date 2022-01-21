@@ -5,7 +5,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:firebase_storage/firebase_storage.dart';
 
-
 class FirebaseHelper {
   static String getid() {
     final auth = FirebaseAuth.instance;
@@ -57,7 +56,7 @@ class FirebaseHelper {
 
     final docdata =
         await firestore.collection(collectionpath).doc(itemid).get();
-
+    print(docdata.get(field));
     return docdata.get(field);
   }
 

@@ -40,7 +40,11 @@ class _AllIdeasItemState extends State<AllIdeasItem> {
         duration: Duration(seconds: 4),
       ),
     );
-    await contactsdata.invest(widget.id,widget.ideaowner);
+    await contactsdata.invest(ideaid: 
+      widget.id,
+      ideaowner: 
+    widget.ideaowner,
+    ideatitle: widget.title);
 
     setState(() {
       disable = true;
@@ -58,9 +62,9 @@ class _AllIdeasItemState extends State<AllIdeasItem> {
   }
 
   Future<void> sendfeedback() async {
-    print('feedback ${feedback.text}');
+   // print('feedback ${feedback.text}');
     if (feedback.text.trim().isEmpty) {
-      print('returning');
+    //  print('returning');
       return;
     }
 
@@ -71,7 +75,7 @@ class _AllIdeasItemState extends State<AllIdeasItem> {
 
     // FocusScope.of(context).unfocus();
 
-    print('executed');
+   // print('executed');
   }
 
   @override
@@ -88,7 +92,8 @@ class _AllIdeasItemState extends State<AllIdeasItem> {
           // alignment: Alignment.centerRight,
           children: [
             Container(
-              height: 550,
+        
+              height: 600,
               width: 320,
               decoration: BoxDecoration(
                 border: Border.all(color: Colors.deepPurple, width: 2),
@@ -176,7 +181,7 @@ class _AllIdeasItemState extends State<AllIdeasItem> {
                       ),
                       label: Text(
                         'Invest',
-                        style: TextStyle(color: Colors.white),
+                       // style: TextStyle(color: Colors.black),
                       )),
                   ElevatedButton.icon(
                       onPressed: () {
@@ -207,8 +212,8 @@ class _AllIdeasItemState extends State<AllIdeasItem> {
                                   keyboardType: TextInputType.text,
                                   textInputAction: TextInputAction.send,
                                   onSubmitted: (val) async {
-                                    print(val);
-                                    print('trying');
+                                   // print(val);
+                                    //print('trying');
                                     await sendfeedback();
                                     Navigator.of(context).pop();
                                     ScaffoldMessenger.of(context).showSnackBar(
@@ -218,7 +223,7 @@ class _AllIdeasItemState extends State<AllIdeasItem> {
                                         duration: Duration(seconds: 4),
                                       ),
                                     );
-                                    print('done');
+                                  //  print('done');
                                   },
                                 ),
                               );
@@ -228,7 +233,7 @@ class _AllIdeasItemState extends State<AllIdeasItem> {
                       label: Text('Feedback')),
                   ElevatedButton(
                     onPressed: () {
-                      print('working');
+                    //  print('working');
                         ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('Thanks for your feedback'),
@@ -236,10 +241,10 @@ class _AllIdeasItemState extends State<AllIdeasItem> {
       ),
     );
                       userIdeas.reporttrash(widget.id);
-                      print('done');
+                     // print('done');
                     },
                     child: Container(
-                      color: Colors.deepPurple,
+                      color: Theme.of(context).primaryColor,
                       height: 30,
                       width: 100,
                       child: FittedBox(
@@ -262,9 +267,7 @@ class _AllIdeasItemState extends State<AllIdeasItem> {
             ),
           ],
         ),
-        SizedBox(
-          width: 15,
-        ),
+       
       ],
     ));
   }

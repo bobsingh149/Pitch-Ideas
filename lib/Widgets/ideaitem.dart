@@ -18,8 +18,8 @@ class _IdeaItemState extends State<IdeaItem> {
   bool isloading = false;
 
   Future<void> delete(bool f) async {
-    print(widget.id.runtimeType);
-    print('id: ${widget.id}');
+    //print(widget.id.runtimeType);
+    //print('id: ${widget.id}');
 
     if (f) {
       setState(() {

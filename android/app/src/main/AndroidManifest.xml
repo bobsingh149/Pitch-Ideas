@@ -1,10 +1,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.pitch">
+      <uses-permission android:name="android.permission.INTERNET"/>
    <application
     
-        android:label="pitch"
+        android:label="Pitch Ideas"
         android:icon="@mipmap/ic_launcher">
-           
+      
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"

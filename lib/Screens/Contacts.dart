@@ -14,9 +14,10 @@ class _ContactScreenState extends State<ContactScreen> {
   Contactsdata contactsdata;
   bool isloading = false;
   bool isinit = true;
-  bool isinvcontacts = false;
+  bool isinvcontacts;
   String ideaid;
   String title;
+  bool nodata = false;
 
   @override
   void didChangeDependencies() {
@@ -24,6 +25,7 @@ class _ContactScreenState extends State<ContactScreen> {
       setState(() {
         isloading = true;
       });
+      contactsdata = Provider.of<Contactsdata>(context);
       final data =
           ModalRoute.of(context).settings.arguments as Map<String, dynamic>;
       if (data != null) {
@@ -31,17 +33,24 @@ class _ContactScreenState extends State<ContactScreen> {
         ideaid = data['ideaid'];
         title = data['title'];
       }
-
-      if (isinvcontacts) {
-        contactsdata = Provider.of<Contactsdata>(context);
+      print('isinv $isinvcontacts');
+      if (isinvcontacts == true) {
         contactsdata.getinvcontacts(ideaid).then((value) {
+          if (!contactsdata.invcontacts.containsKey(ideaid)) nodata = true;
+          setState(() {
+            isloading = false;
+          });
+        });
+      } else if (isinvcontacts == false) {
+        contactsdata.getMyInvestment().then((value) {
+          if (contactsdata.myinvestment.isEmpty) nodata = true;
           setState(() {
             isloading = false;
           });
         });
       } else {
-        contactsdata = Provider.of<Contactsdata>(context);
-        contactsdata.getcontacts(false).then((value) {
+        contactsdata.getcontacts().then((value) {
+          if (contactsdata.contacts.isEmpty) nodata = true;
           setState(() {
             isloading = false;
           });
@@ -59,50 +68,83 @@ class _ContactScreenState extends State<ContactScreen> {
     super.didChangeDependencies();
   }
 
+  Widget getlist() {
+    print('isinvcontacts $isinvcontacts');
+    if (isinvcontacts == true) {
+      final invlist = contactsdata.invcontacts[ideaid];
+      return ListView.builder(
+
+          physics: BouncingScrollPhysics(),
+          itemCount: invlist.length,
+          itemBuilder: (ctx, idx) {
+            return ContactItem(
+              contactid: invlist[idx].userid,
+              name: invlist[idx].name,
+              url: invlist[idx].url,
+              gender: invlist[idx].gender,
+              age: invlist[idx].age.toString(),
+              country: invlist[idx].country,
+              profession: invlist[idx].profession,
+            );
+          });
+    } else if (isinvcontacts == false) {
+      final myinvlist = contactsdata.myinvestment;
+      return ListView.builder(
+          physics: BouncingScrollPhysics(),
+          itemCount: myinvlist.length,
+          itemBuilder: (ctx, idx) {
+            return ContactItem(
+              contactid: myinvlist[idx].userid,
+              name: myinvlist[idx].name,
+              url: myinvlist[idx].url,
+              gender: myinvlist[idx].gender,
+              age: myinvlist[idx].age.toString(),
+              country: myinvlist[idx].country,
+              profession: myinvlist[idx].profession,
+            );
+          });
+    } else {
+      final teamcontacts = contactsdata.contacts;
+      return ListView.builder(
+          physics: BouncingScrollPhysics(),
+          itemCount: teamcontacts.length,
+          itemBuilder: (ctx, idx) {
+            return ContactItem(
+              contactid: teamcontacts[idx].userid,
+              name: teamcontacts[idx].name,
+              url: teamcontacts[idx].url,
+              gender: teamcontacts[idx].gender,
+              age: teamcontacts[idx].age.toString(),
+              country: teamcontacts[idx].country,
+              profession: teamcontacts[idx].profession,
+            );
+          });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text('Contacts'),
-        ),
-        drawer: Drawers(),
-        body: isloading
-            ? Center(child: CircularProgressIndicator())
-            : isinvcontacts
-                ? ListView.builder(
-                    physics: BouncingScrollPhysics(),
-                    itemCount: contactsdata.invcontacts.length,
-                    itemBuilder: (ctx, idx) {
-                      return ContactItem(
-                        contactid: contactsdata.invcontacts[idx].userid,
-                        name: contactsdata.invcontacts[idx].name,
-                        url: contactsdata.invcontacts[idx].url,
-                        gender: contactsdata.invcontacts[idx].gender,
-                      );
-                    })
-                : RefreshIndicator(
-                    onRefresh: () async{
-                      await contactsdata.getcontacts(true);
-                    },
-                    child: Column(
-                      children: [
-                        SizedBox(height: 15,),
-                        Expanded(
-                          child: 
-                          ListView.builder(
-                              physics: BouncingScrollPhysics(),
-                              itemCount: contactsdata.contacts.length,
-                              itemBuilder: (ctx, idx) {
-                                return ContactItem(
-                                  contactid: contactsdata.contacts[idx].userid,
-                                  name: contactsdata.contacts[idx].name,
-                                  url: contactsdata.contacts[idx].url,
-                                  gender: contactsdata.contacts[idx].gender,
-                                );
-                              }),
-                       ),
-                      ],
+      appBar: AppBar(
+        title: Text('Contacts'),
+      ),
+      drawer: Drawers(),
+      body: isloading
+          ? Center(child: CircularProgressIndicator())
+          : nodata
+              ? Center(
+                  child: Text('You don\'t have any Connections yet'),
+                )
+              : Column(
+                  children: [
+                    SizedBox(
+                      height: 9,
                     ),
-                  ));
+                    Expanded(
+                      child: getlist(),
+                    ),
+                  ],
+                ),
+    );
   }
 }

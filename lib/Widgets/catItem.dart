@@ -23,7 +23,7 @@ class CatItem extends StatefulWidget {
 class _CatItemState extends State<CatItem> {
  
   Widget build(BuildContext context) {
-      print('categotyItem build method');
+     // print('categotyItem build method');
     return InkWell(
       onTap: () {
         Navigator.of(context).pushNamed(UserInput.routename,

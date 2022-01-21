@@ -9,6 +9,7 @@ import 'package:pitch/Screens/Contacts.dart';
 import 'package:pitch/Screens/FirstScreen.dart';
 import 'package:pitch/Screens/TabScreen.dart';
 import 'package:pitch/Screens/homeScreen.dart';
+import 'package:pitch/Screens/inbox.dart';
 import 'package:pitch/Screens/login.dart';
 import 'package:pitch/Screens/settings.dart';
 import 'package:provider/provider.dart';
@@ -18,6 +19,7 @@ class Drawers extends StatelessWidget {
   Widget listtilebuilder(
       {String title, String sub, Icon icon, Function f, BuildContext ctx}) {
     return ListTile(
+      
       title: Text(
         title,
         style: Theme.of(ctx).textTheme.bodyText2,
@@ -37,9 +39,9 @@ class Drawers extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
             gradient: LinearGradient(colors: [
-          Colors.white70,
+          Colors.white,
           Colors.white54,
-          Colors.deepPurple,
+          Colors.blue,
         ], begin: Alignment.topCenter, end: Alignment.bottomCenter)),
         child: Column(
           children: [
@@ -69,13 +71,34 @@ class Drawers extends StatelessWidget {
               ctx: context,
             ),
             listtilebuilder(
+
               title: 'Team Contacts',
               sub: 'meet with your team',
+              
               f: () {
                 Navigator.of(context)
                     .pushReplacementNamed(ContactScreen.routname);
               },
               icon: Icon(Icons.contacts),
+              ctx: context,
+            ),
+             listtilebuilder(
+              title: 'My Investments',
+              sub: 'See my investments',
+              f: () {
+                Navigator.of(context).pushReplacementNamed(ContactScreen.routname
+                ,arguments: {'inv':false});
+              },
+              icon: Icon(Icons.monetization_on),
+              ctx: context,
+            ),
+            listtilebuilder(
+              title: 'Inbox',
+              sub: 'See new notifications',
+              f: () {
+                Navigator.of(context).pushReplacementNamed(Inbox.routenamme);
+              },
+              icon: Icon(Icons.inbox),
               ctx: context,
             ),
             listtilebuilder(

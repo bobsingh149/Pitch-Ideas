@@ -16,6 +16,7 @@ class _TargetState extends State<Target> {
   UserIdeas userIdeas;
   TargetData targetData = new TargetData();
   String id;
+  bool nodata = false;
   @override
   void didChangeDependencies() {
     if (init) {
@@ -32,6 +33,7 @@ class _TargetState extends State<Target> {
 
       userIdeas.gettargetdata(id, false).then((value) {
         targetData = value;
+        if (targetData.gender.isEmpty) nodata = true;
         setState(() {
           isloading = false;
         });
@@ -54,7 +56,7 @@ class _TargetState extends State<Target> {
 
   List<Widget> getData(Map<String, double> dataMap) {
     List<Widget> widgets = [];
- print('data $dataMap');
+   // print('data $dataMap');
     dataMap.forEach((key, value) {
       widgets.add(Column(
         children: [
@@ -81,14 +83,14 @@ class _TargetState extends State<Target> {
       return 'Young Adults 22-35';
     } else if (grp == '4') {
       return 'Miidle Aged 35-64';
-    } else  {
+    } else {
       return 'Elderly 65 and above';
     }
   }
 
   List<Widget> getage(Map<String, double> dataMap) {
     List<Widget> widgets = [];
-    print('age $dataMap');
+    //print('age $dataMap');
     dataMap.forEach((key, value) {
       widgets.add(Column(
         children: [
@@ -108,42 +110,52 @@ class _TargetState extends State<Target> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(' Your Target Audience '),
-      ),
-     // backgroundColor: Colors.white70,
-      body: isloading
-          ? Center(
-              child: CircularProgressIndicator(),
-            )
-          : RefreshIndicator(
-              onRefresh: () async {
-                await userIdeas.gettargetdata(id, true);
-              },
-              child: Column(
-                children: [
-                  Expanded(
-                    child: ListView(children: [
-                    
-                      titlecontainer('Age'),
-                      ...getage(targetData.agegrp),
-                      titlecontainer('Gender'),
-                      ...getData(targetData.gender),
-                      titlecontainer('Profession'),
-                      ...getData(targetData.profession),
-                        titlecontainer('Country'),
-                      ...getData(targetData.country),
-                    ]),
-                  ),
-                  Container(
-                    height: 40,
-                    width: double.infinity,
-                    color: Colors.grey,
-                    child: Text('Swipe down to see more insights',style: Theme.of(context).textTheme.bodyText1,))
-                ],
-              ),
+    return 
+        Scaffold(
+            appBar: AppBar(
+              title: Text(' Your Target Audience '),
             ),
-    );
+            // backgroundColor: Colors.white70,
+            body: isloading
+                ? Center(
+                    child: CircularProgressIndicator(),
+                  )
+                : nodata
+        ? Center(
+            child: Text('We don\'t have enough data yet'),
+          )
+        :  RefreshIndicator(
+                    onRefresh: () async {
+                      await userIdeas.gettargetdata(id, true);
+                    },
+                    child: Column(
+                      children: [
+                        Expanded(
+                          child: ListView(children: [
+                            titlecontainer('Age'),
+                            ...getage(targetData.agegrp),
+                            Divider(thickness: 5),
+                            titlecontainer('Gender'),
+                            ...getData(targetData.gender),
+                                       Divider(thickness: 5),
+                            titlecontainer('Profession'),
+                            ...getData(targetData.profession),
+                                       Divider(thickness: 5),
+                            titlecontainer('Country'),
+                            ...getData(targetData.country),
+                          ]),
+                        ),
+                        Container(
+                            height: 40,
+                            width: double.infinity,
+                            color: Colors.grey,
+                            child: Text(
+                              'Swipe down to see more insights',
+                              style: Theme.of(context).textTheme.bodyText1,
+                            ))
+                      ],
+                    ),
+                  ),
+          );
   }
 }

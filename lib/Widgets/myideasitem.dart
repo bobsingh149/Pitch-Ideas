@@ -23,7 +23,7 @@ class _MyIdeasItemState extends State<MyIdeasItem> {
     UserIdeas userideas = Provider.of<UserIdeas>(context, listen: false);
 
     return InkWell(
-      splashColor: Colors.green,
+      splashColor: Colors.deepPurple,
       onTap: () {
         Navigator.of(context)
             .pushNamed(Target.routename, arguments: {'id': widget.id});
@@ -53,7 +53,8 @@ class _MyIdeasItemState extends State<MyIdeasItem> {
                       ),
                     ),
                     child: Container(
-                      height: 100,
+                      constraints: BoxConstraints(minHeight: 100),
+                    //  height: 390,
                        //color: Colors.black,
                       child: Card(
                         elevation: 17,
@@ -87,11 +88,12 @@ class _MyIdeasItemState extends State<MyIdeasItem> {
                               Icons.lightbulb,
                               color: Colors.deepPurple,
                             ),
-                            title: Text(widget.title,style: Theme.of(context).textTheme.bodyText1),
+                            title: Text(widget.title,style: TextStyle(color: Colors.deepPurple
+                            ,fontWeight: FontWeight.bold,fontSize: 23)),
                             subtitle: Text(widget.about,style: Theme.of(context).textTheme.subtitle1,),
                             hoverColor: Colors.amber,
                             trailing: Container(
-                              width: 100,
+                             width: 100,
                               color: Colors.black26,
                               child: Row(
                                 children: [
@@ -193,7 +195,7 @@ class _MyIdeasItemState extends State<MyIdeasItem> {
                           label: Text('See Investors')),
 
 
-                            FittedBox(
+                           /* FittedBox(
                               child: TextButton(
                           onPressed: () {
                            Navigator.of(context)
@@ -201,7 +203,7 @@ class _MyIdeasItemState extends State<MyIdeasItem> {
                           },
                          // icon: Icon(Icons.comment),
                           child: Text('Target Audience ')),
-                            ),
+                            ),*/
                     ],
                   ),
                   SizedBox(height: 10),

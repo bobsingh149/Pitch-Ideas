@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -18,6 +20,7 @@ class _ShowMyIdeasState extends State<ShowMyIdeas> {
   bool init = true;
   bool isloading = false;
   UserIdeas userideas;
+  bool nodata = false;
 
   @override
   void initState() {
@@ -34,6 +37,7 @@ class _ShowMyIdeasState extends State<ShowMyIdeas> {
       });
 
       userideas.initilize().then((value) {
+        if (userideas.myIdeas.isEmpty) nodata = true;
         setState(() {
           isloading = false;
         });
@@ -56,7 +60,8 @@ class _ShowMyIdeasState extends State<ShowMyIdeas> {
           ? Center(
               child: CircularProgressIndicator(),
             )
-          : /*StreamBuilder(
+          : nodata ?Center(child: Text('No Ideas yet why not start adding some'),)
+           /*StreamBuilder(
               stream: FirebaseFirestore.instance
                   .collection('ideas')
                   .where('uid', isEqualTo: FirebaseHelper.getid())
@@ -68,18 +73,33 @@ class _ShowMyIdeasState extends State<ShowMyIdeas> {
                   );
                 else {
                   print('data  ${userideas.myideas}');*/
-          ListView.builder(
-              itemCount: userideas.myIdeas.length,
-              itemBuilder: (ctx, idx) {
-                final myideas = userideas.myIdeas;
-                return
-                    // Text(userideas.myIdeas[idx].title);
-                    MyIdeasItem(
-                  id: myideas[idx].id,
-                  title: myideas[idx].title,
-                  about: myideas[idx].about,
-                );
-              }),
+         : Column(
+              children: [
+                Container(
+                    color: Colors.black87,
+                    child: Text(
+                      'Tap on ideas to see your target audience',
+                      style: TextStyle(fontSize: 20, color: Colors.white),
+                    )),
+                SizedBox(
+                  height: 5,
+                ),
+                Expanded(
+                  child: ListView.builder(
+                      itemCount: userideas.myIdeas.length,
+                      itemBuilder: (ctx, idx) {
+                        final myideas = userideas.myIdeas;
+                        return
+                            // Text(userideas.myIdeas[idx].title);
+                            MyIdeasItem(
+                          id: myideas[idx].id,
+                          title: myideas[idx].title,
+                          about: myideas[idx].about,
+                        );
+                      }),
+                ),
+              ],
+            ),
     );
   }
 }

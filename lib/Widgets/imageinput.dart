@@ -51,25 +51,25 @@ class _ImageInputState extends State<ImageInput> {
 
     savedfile = await showimg.copy(dir);
 
-    print('saved image : ${savedfile.path}');
-    print('temp image :  ${showimg.path}');
+    //print('saved image : ${savedfile.path}');
+    //print('temp image :  ${showimg.path}');
 
     setState(() {});
 
     widget.setimage(savedfile);
   }
 
-  Future<void> save(String title, ImageData imgdata) async {
+ /* Future<void> save(String title, ImageData imgdata) async {
     if (imgdata == null || title == null) {
-      print('invalid');
+     // print('invalid');
       return;
     }
     await imgdata.add(title, savedfile);
-  }
+  }*/
 
   @override
   Widget build(BuildContext context) {
-    final imgdataobject = Provider.of<ImageData>(context);
+    //final imgdataobject = Provider.of<ImageData>(context);
     return Container(
       /*appBar: AppBar(
         title: Text('Image'),

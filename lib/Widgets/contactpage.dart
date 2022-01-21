@@ -1,8 +1,9 @@
-import 'dart:ffi';
+
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:pitch/Providers/chatcontacts.dart';
 import 'package:pitch/helper/firebasequeries.dart';
 import 'package:provider/provider.dart';
@@ -31,13 +32,7 @@ class _ContactPageState extends State<ContactPage> {
 
     message.text = '';
 
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text('text send '),
-      action: SnackBarAction(
-        label: 'undo',
-        onPressed: null,
-      ),
-    ));
+    
   }
 
   bool itsmymessage(String senderid) {
@@ -63,6 +58,7 @@ class _ContactPageState extends State<ContactPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(name),
+    
       ),
       body: Container(
         height: MediaQuery.of(context).size.height * 1,

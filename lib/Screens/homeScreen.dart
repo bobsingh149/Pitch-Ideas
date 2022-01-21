@@ -12,6 +12,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
 
+
+
 class HomeScreen extends StatefulWidget {
   static const String routename = '/homescreen';
   @override
@@ -110,11 +112,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Stack(
                   children: [
                     Container(
-                      height: mediaquery.size.height * 0.3,
+                      height: mediaquery.size.height * 0.35,
 
                       width: mediaquery.size.width * 1,
 
-                      margin: EdgeInsets.all(7),
+                      margin: EdgeInsets.all(2),
 
                       //alignment: Alignment.center,
 
@@ -135,34 +137,64 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                     Container(
-                        width: 300,
-                        color: Colors.black54,
+                        width: 370,
+                        color: Colors.black87,
                         child: FittedBox(
-                            child: Text('Tap to pitch your idea',
-                                style: TextStyle(color: Colors.white)))),
+                            child: Text('Tap To Create Your Idea',
+                                style: TextStyle(fontSize: 36,fontWeight: FontWeight.w900,color: Colors.white)
+                                )
+                                )),
                   ],
                   alignment: Alignment.center,
                   fit: StackFit.loose,
                 ),
               ),
-              SizedBox(height: 15),
+              SizedBox(height: 35),
               // Spacer(),
               TextButton(
                   onPressed: () {
                     Navigator.of(context).pushNamed(AllIdeasScreen.routename);
                   },
-                  child: Text(
-                    'Click to Browse All Ideas',
-                    style: TextStyle(
-                      fontSize: 19,
+                  child: Container(
+
+                    decoration: BoxDecoration(
+                      color: Colors.amber[300],
+                      border: Border.all(color: Colors.deepPurple,width: 2),
+                      borderRadius: BorderRadius.circular(20)),
+                    padding: EdgeInsets.symmetric(horizontal: 30),
+                    child: Text(
+                      'Tap above to create your Idea or Click here to Browse Your Fellows Ideas or scroll down',
+                      style: TextStyle(
+                        fontSize: 19,
+                      ),
                     ),
                   )),
+                  Card(
+                    color: Colors.black,
+                    elevation: 26,
+                    child: Container(
+                      padding: EdgeInsets.all(5),
+                      child: Text('You can give your feedbacks,\n Team up with the idea owner,\n or Invest in a idea you like'
+                      ,style: TextStyle(color: Colors.white),),
+                    )),
+
+                    SizedBox(height: 30,),
 
               //width: double.infinity,
               Container(
-                  color:
+                decoration: BoxDecoration(
+                   gradient: LinearGradient(colors: [
+                     Colors.blue[300],
+              
+                      Colors.white54,
+                      
+                     
+                      
+                    ], begin: Alignment.topLeft, end: Alignment.bottomRight),
+                ),
+                  //color:
                       //Colors.white70,
-                      Color.fromRGBO(222, 184, 135, 1),
+                     // Color.fromRGBO(222, 184, 135, 1),
                   child: AllIdeas()),
             ],
           ),

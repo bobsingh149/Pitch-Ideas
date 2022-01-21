@@ -5,15 +5,13 @@ import 'package:pitch/Screens/ShowMyIdeas.dart';
 import 'package:pitch/Screens/additionalinfo.dart';
 import 'package:pitch/Screens/homeScreen.dart';
 import 'package:pitch/Widgets/drawer.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-
-import 'package:pitch/Providers/category.dart';
 
 import 'package:pitch/Providers/globalData.dart';
-import 'package:pitch/Providers/ideas.dart';
+
 import 'package:pitch/helper/firebasequeries.dart';
 
 import 'package:provider/provider.dart';
+import 'package:connectivity/connectivity.dart';
 
 class Tabs extends StatefulWidget {
   static const String routename = '/tabs';
@@ -43,35 +41,49 @@ class _TabsState extends State<Tabs> {
   @override
   void didChangeDependencies() {
     //print(widget.signout);
-    if (isinit) {
-      print('entering');
+    final global = Provider.of<Global>(context, listen: false);
+    if (isinit && !global.additonaldone) {
+     // print('entering');
       setState(() {
         isloading = true;
       });
+
       FirebaseFirestore.instance
-          .collection('users')
-          .doc(FirebaseHelper.getid())
-          .get()
-          .then((snap) {
-        //print(object)
-        if (!snap.exists) {
-          //Provider.of<Global>(context, listen: false).setuser(true);
-          
-          Navigator.of(context).pushReplacementNamed(Additional.routename);
-          /* setState(() {
+              .collection('users')
+              .doc(FirebaseHelper.getid())
+              .get()
+              .then((snap) {
+            //print(object)
+            if (!snap.exists) {
+              //print('1');
+              //Provider.of<Global>(context, listen: false).setuser(true);
+
+              Navigator.of(context).pushReplacementNamed(Additional.routename);
+              /* setState(() {
             isloading = false;
           });*/
-         
-        } else {
-          final contactsdata =
-              Provider.of<Contactsdata>(context, listen: false);
-          contactsdata.getcontacts(false).then((value) {
-            setState(() {
-              isloading = false;
-            });
+
+            } else {
+             // print('2');
+              global.additonaldone = true;
+
+              final contactsdata =
+                  Provider.of<Contactsdata>(context, listen: false);
+              contactsdata.getcontacts().then((value) {
+                contactsdata.getMyInvestment().then((value) => {
+                                  setState(() {
+                  isloading = false;
+                })
+
+
+                });
+              });
+            }
+          }).catchError((error) {
+            print(error.toString());
           });
-        }
-      });
+
+      
     }
     isinit = false;
     super.didChangeDependencies();
@@ -84,31 +96,31 @@ class _TabsState extends State<Tabs> {
       initial = data;
     }
 
-    return isloading 
-    ? Scaffold(
+    return isloading
+        ? Scaffold(
             appBar: AppBar(
               title: Text('Loading'),
             ),
             body: Center(child: CircularProgressIndicator()))
-    :DefaultTabController(
-        initialIndex: initial,
-        length: 2,
-        child: Scaffold(
-          // key: Scaffoldkey,
-          appBar: AppBar(
-            bottom: TabBar(
-              tabs: [
-                Tab(
-                  child: Text('Homepage'),
-                  icon: Icon(Icons.home),
+        : DefaultTabController(
+            initialIndex: initial,
+            length: 2,
+            child: Scaffold(
+              // key: Scaffoldkey,
+              appBar: AppBar(
+                bottom: TabBar(
+                  tabs: [
+                    Tab(
+                      child: Text('Homepage'),
+                      icon: Icon(Icons.home),
+                    ),
+                    Tab(
+                      text: 'My Ideas',
+                      icon: Icon(Icons.lightbulb),
+                    ),
+                  ],
                 ),
-                Tab(
-                  text: 'My Ideas',
-                  icon: Icon(Icons.lightbulb),
-                ),
-              ],
-            ),
-            /* actions: [
+                /* actions: [
               PopupMenuButton(
                   icon: Icon(Icons.more_vert),
                   onSelected: (bool val) {
@@ -125,14 +137,14 @@ class _TabsState extends State<Tabs> {
                     ];
                   })
             ],*/
-          ),
-          drawer: Drawers(),
-          body: TabBarView(
-            children: [
-              HomeScreen(),
-              ShowMyIdeas(),
-            ],
-          ),
-        ));
+              ),
+              drawer: Drawers(),
+              body: TabBarView(
+                children: [
+                  HomeScreen(),
+                  ShowMyIdeas(),
+                ],
+              ),
+            ));
   }
 }

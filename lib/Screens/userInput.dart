@@ -74,17 +74,17 @@ class _UserInputState extends State<UserInput> {
         Idea ideaToEdit = useridea.getidea(ideaid);
 
         idea = ideaToEdit;
-
-         print(idea.title);
-      print(idea.id);
-      print(idea.about);
-       print(idea.description);
-      print(idea.private);
-      print(idea.investor);
-      print(idea.investorids);
-      print(idea.likesids);
-      print(idea.catid);
-      print(idea.cattitle);
+        /*print('updating');
+        print(idea.title);
+        print(idea.id);
+        print(idea.about);
+        print(idea.description);
+        print(idea.private);
+        print(idea.investor);
+        print(idea.investorids);
+        print(idea.likesids);
+        print(idea.catid);
+        print(idea.cattitle);*/
 
         titlecontroller.text = ideaToEdit.title;
         about = ideaToEdit.about;
@@ -112,8 +112,6 @@ class _UserInputState extends State<UserInput> {
     if (!valid) return;
     formkey.currentState.save();
 
-   
-
     setState(() {
       isloading = true;
     });
@@ -123,7 +121,7 @@ class _UserInputState extends State<UserInput> {
     });*/
     if (edit) {
       print('editing');
-     /* print(idea.title);
+      /* print(idea.title);
       print(idea.id);
       print(idea.about);
        print(idea.description);
@@ -144,8 +142,8 @@ class _UserInputState extends State<UserInput> {
         //'image': idea.img,
       });
     } else {
-       idea.catid = catid;
-    idea.cattitle = cattitle;
+      idea.catid = catid;
+      idea.cattitle = cattitle;
       print('idea id ${idea.id}');
       await useridea.add(collectionpath: 'ideas', idea: idea, data: {
         'title': idea.title,
@@ -201,9 +199,6 @@ class _UserInputState extends State<UserInput> {
               onPressed: () {
                 saveform();
               }),
-          FloatingActionButton(onPressed: () {
-            Navigator.of(context).pushNamed(AllIdeas.routename);
-          })
         ],
       ),
       drawer: Drawers(),
@@ -220,7 +215,7 @@ class _UserInputState extends State<UserInput> {
                       TextFormField(
                         decoration: InputDecoration(
                           labelText: 'Title',
-                          hintText: 'What\'s your idea',
+                          hintText: 'What\'s your idea Max 30 characters',
                         ),
                         keyboardType: TextInputType.text,
                         textInputAction: TextInputAction.next,
@@ -234,6 +229,8 @@ class _UserInputState extends State<UserInput> {
                         validator: (val) {
                           if (val.isEmpty)
                             return 'This field can\'t be empty';
+                          else if (val.length > 30)
+                            return 'Maximum 30 characters allowed';
                           else
                             return null;
                         },
@@ -245,7 +242,7 @@ class _UserInputState extends State<UserInput> {
                         initialValue: about,
                         decoration: InputDecoration(
                           labelText: 'About',
-                          hintText: 'Briefly describe your idea',
+                          hintText: 'Briefly describe your idea Max 200 characters',
                         ),
                         keyboardType: TextInputType.multiline,
                         maxLines: 3,
@@ -260,6 +257,8 @@ class _UserInputState extends State<UserInput> {
                         validator: (val) {
                           if (val.isEmpty)
                             return 'This field can\'t be empty';
+                              else if (val.length > 200)
+                            return 'Maximum 200 characters allowed';
                           else
                             return null;
                         },
@@ -271,12 +270,13 @@ class _UserInputState extends State<UserInput> {
                         initialValue: des,
                         decoration: InputDecoration(
                           labelText: 'Description',
-                          hintText: 'Optional - Explain in detail your idea',
+                          hintText:
+                              'Explain in detail your idea Max 950 characters',
                         ),
                         keyboardType: TextInputType.multiline,
                         focusNode: focus2,
                         autocorrect: true,
-                        maxLines: 6,
+                        maxLines: 10,
                         // textInputAction: TextInputAction.done,
                         onSaved: (String val) {
                           idea.description = val;
@@ -284,6 +284,8 @@ class _UserInputState extends State<UserInput> {
                         validator: (val) {
                           if (val.isEmpty)
                             return 'This field can\'t be empty';
+                              else if (val.length > 950)
+                            return 'Maximum 950 characters allowed';
                           else
                             return null;
                         },
@@ -348,7 +350,7 @@ class _UserInputState extends State<UserInput> {
                           title: Text('Find Investors'),
                           subtitle: FittedBox(
                               child: Text(
-                                  'If selected your ideas will be shown to verified investors')),
+                                  'Your ideas will be shown to verified investors')),
                           //tileColor: Colors.deepOrange,
                           value: investor,
                           onChanged: (newval) {

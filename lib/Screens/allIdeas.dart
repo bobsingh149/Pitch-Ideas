@@ -53,10 +53,10 @@ class _AllIdeasState extends State<AllIdeas> {
                           child: Text('only Science Theories'), value: 7),
                     ]),
               ),
-              SizedBox(height: 30,),
+              SizedBox(height: 15,),
               Container(
                // color: Colors.red,
-                  height: 650,
+                  height: 700,
                   // color: Colors.amber,
                   /* appBar: AppBar(
                       title: const Text('Browse All Ideas'),
@@ -99,7 +99,8 @@ class _AllIdeasState extends State<AllIdeas> {
                               : ListView.builder(
                                   scrollDirection: Axis.horizontal,
                                   itemCount: snapshot.data.docs.length,
-                                  physics: BouncingScrollPhysics(),
+                                 // physics: BouncingScrollPhysics(),
+                                  physics: const AlwaysScrollableScrollPhysics(),
                                   itemBuilder: (ctx, idx) {
                                     if (snapshot.data.docs[idx]['uid'] !=
                                         FirebaseHelper.getid()) {
