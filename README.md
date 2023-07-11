@@ -1,4 +1,4 @@
-# Pitch Ideas
+# Pitch Ideas - Share your Creativity 
 
 # A play store app to Pitch your Ideas to Investors
 
