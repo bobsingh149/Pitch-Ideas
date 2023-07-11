@@ -1,6 +1,6 @@
 # Pitch Ideas
 
-# A play store app to Pitch Ideas to Investors
+# A play store app to Pitch your Ideas to Investors
 
 This app allows users to pitch their ideas to investors. Users can create a profile, upload their pitch deck, and connect with other users who share their passion. The app also provides insights about the target audience, such as demographics and interests.
 
