@@ -16,4 +16,4 @@ To get started, simply create a profile and upload your pitch deck. You can then
 # Contributing
 We welcome contributions to this project. If you have any ideas or improvements, please feel free to open an issue or submit a pull request.
 
-# Play Store Link :- https://play.google.com/store/apps/details?id=com.bobby.pitch
+Play Store Link :- https://play.google.com/store/apps/details?id=com.bobby.pitch
